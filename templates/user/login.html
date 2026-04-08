@@ -1,0 +1,53 @@
+{% extends 'blogs/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+  <div class="card mx-auto shadow p-4" style="max-width: 400px; border-radius: 15px;">
+    
+    <h3 class="text-center mb-4">Login</h3>
+
+    <!-- 🔴 Non-field errors -->
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <p class="mb-0">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- Username -->
+      <div class="mb-3">
+        <label>Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <div class="text-danger small">
+            {{ form.username.errors.0 }}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label>Password</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+          <div class="text-danger small">
+            {{ form.password.errors.0 }}
+          </div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-dark w-100">Login</button>
+    </form>
+     <p class="text-center mt-3">
+          Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none" style="color:#4b3f72;">register</a>
+        </p>
+
+  </div>
+</div>
+
+{% endblock %}

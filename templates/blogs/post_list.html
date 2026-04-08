@@ -1,0 +1,138 @@
+{% extends 'blogs/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="mb-3">
+    <form method="GET">
+      <div class="input-group shadow-sm">
+        <input type="text" name="search" class="form-control" placeholder="Search posts..." value="{{ search_queary }}" />
+
+        {% if category_queary %}
+          <input type="hidden" name="category" value="{{ category_queary }}" />
+        {% endif %}
+
+        {% if tag_queary %}
+          <input type="hidden" name="tag" value="{{ tag_queary }}" />
+        {% endif %}
+
+        <button class="btn btn-dark">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="row">
+    <!-- LEFT SIDE POSTS -->
+    <div class="col-md-8">
+      {% for post in page_obj %}
+        <div class="card mb-4 shadow-sm border-0 rounded-3">
+          <div class="card-body">
+            <h3 class="card-title"><a href="{% url 'post_details' post.id %}" class="text-decoration-none text-dark">{{ post.title }}</a></h3>
+            <p class="text-muted small">By {{ post.author }} | {{ post.created_at|date:'M d, Y' }}</p>
+            <p class="card-text">{{ post.content|safe|truncatewords:25 }}</p>
+            <a href="{% url 'post_details' post.id %}" class="btn btn-sm btn-outline-dark">Read More →</a>
+          </div>
+        </div>
+      {% empty %}
+        <p>No posts found.</p>
+      {% endfor %}
+
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+        <nav>
+          <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link"
+                  href="?{% if search_queary %}
+                    q={{ search_queary }}&
+                  {% endif %}{% if categoryQ %}
+                    category={{ categoryQ }}&
+                  {% endif %}{% if tagQ %}
+                    tag={{ tagQ }}&
+                  {% endif %}page={{ page_obj.previous_page_number }}">
+                  Previous
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+              </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <li class="page-item active">
+                  <span class="page-link">{{ num }}</span>
+                </li>
+              {% else %}
+                <li class="page-item">
+                  <a class="page-link"
+                    href="?{% if search_queary %}
+                      q={{ search_queary }}&
+                    {% endif %}{% if categoryQ %}
+                      category={{ categoryQ }}&
+                    {% endif %}{% if tagQ %}
+                      tag={{ tagQ }}&
+                    {% endif %}page={{ num }}">
+                    {{ num }}
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link"
+                  href="?{% if search_queary %}
+                    q={{ search_queary }}&
+                  {% endif %}{% if categoryQ %}
+                    category={{ categoryQ }}&
+                  {% endif %}{% if tagQ %}
+                    tag={{ tagQ }}&
+                  {% endif %}page={{ page_obj.next_page_number }}">
+                  Next
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    </div>
+
+    <!-- RIGHT SIDE FILTER -->
+    <div class="col-md-4">
+      <div class="p-3 shadow-sm bg-light rounded">
+        <h5 class="mb-3">📂 Categories</h5>
+        <ul class="list-group mb-4">
+          <!-- All -->
+          <li class="list-group-item">
+            <a href="{% url 'post_list' %}" class="text-decoration-none">All Categories</a>
+          </li>
+
+          {% for category in categories %}
+            <li class="list-group-item {% if category_queary == category.name %}active{% endif %}">
+              <a href="?category={{ category.name }}{% if search_queary %}
+                  &search={{ search_queary }}
+                {% endif %}{% if tag_queary %}
+                  &tag={{ tag_queary }}
+                {% endif %}"
+                class="text-decoration-none text-dark">
+                {{ category.name }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <h5 class="mb-3">🏷 Tags</h5>
+        <div>
+        {% for tag in tags %}
+            <a href="?tag={{ tag.name }}{% if search_queary %}&search={{ search_queary }}{% endif %}{% if category_queary %}&category={{ category_queary }}{% endif %}" 
+            class="badge bg-dark text-white text-decoration-none m-1 p-2">
+            {{ tag.name }}
+            </a>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

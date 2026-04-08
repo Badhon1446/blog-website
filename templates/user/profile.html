@@ -1,0 +1,82 @@
+{% extends 'blogs/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="container mt-4">
+    <div class="row">
+      <!-- 🔹 Sidebar -->
+      <div class="col-md-3">
+        <div class="card shadow-sm p-3">
+          <h5 class="mb-3">Dashboard</h5>
+
+          <ul class="nav flex-column">
+            {% comment %} <li class="nav-item mb-2">
+              <a href="?section=profile" class="nav-link {% if section == 'profile' %}active bg-dark text-white{% endif %}">Profile</a>
+            </li> {% endcomment %}
+
+            <li class="nav-item mb-2">
+              <a href="{% url 'profile' %}?section=posts" class="nav-link {% if section == 'posts' %}active bg-dark text-white{% endif %}">My Posts</a>
+            </li>
+
+            <li class="nav-item mb-2">
+              <a href="{% url 'profile' %}?section=update" class="nav-link {% if section == 'update' %}active bg-dark text-white{% endif %}">Update Profile</a>
+            </li>
+          </ul>
+
+          <!-- 🔴 Logout Button -->
+          <a href="{% url 'logout' %}" class="btn btn-danger w-100 mt-2">Logout</a>
+        </div>
+      </div>
+
+      <!-- 🔹 Main Content -->
+      <div class="col-md-9">
+        <div class="card shadow-sm p-4">
+          <!-- 🔹 Profile Section -->
+          {% if section == 'profile' %}
+            <h3>Welcome, {{ request.user.get_full_name|default:request.user.username }}</h3>
+            <p class="text-muted">{{ request.user.email }}</p>
+
+            <!-- 🔹 Posts Section -->
+          {% elif section == 'posts' %}
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3>My Posts</h3>
+              <a href="{% url 'post_create' %}" class="btn btn-dark">+ Create Post</a>
+            </div>
+
+            {% for post in posts %}
+              <div class="border rounded p-3 mb-3">
+                <h5>{{ post.title }}</h5>
+                <p class="text-muted small">{{ post.created_at|date:'M d, Y' }}</p>
+
+                <div class="mb-2">{{ post.content|striptags|truncatewords:20 }}</div>
+
+                <div class="d-flex gap-2">
+                  <!-- Edit -->
+                  <a href="{% url 'post_update' post.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+
+                  <!-- Delete (FIXED) -->
+                  <form method="POST" action="{% url 'post_delete' post.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                  </form>
+                </div>
+              </div>
+            {% empty %}
+              <p>No posts found.</p>
+            {% endfor %}
+
+            <!-- 🔹 Update Profile Section -->
+          {% elif section == 'update' %}
+            <h3 class="mb-3">Update Profile</h3>
+
+            <form method="POST">
+              {% csrf_token %}
+              {{ form|crispy }}
+              <button type="submit" class="btn btn-dark w-100 mt-2">Update</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

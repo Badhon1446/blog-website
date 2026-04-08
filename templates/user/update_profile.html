@@ -1,0 +1,18 @@
+{% extends "blogs/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="card shadow-sm p-4">
+  <h4 class="mb-3">Update Profile</h4>
+
+  <form method="POST">
+    {% csrf_token %}
+    
+    {{ form|crispy }}
+
+    <button type="submit" class="btn btn-dark w-100 mt-3">
+      Update Profile
+    </button>
+  </form>
+</div>
+{% endblock content %}
