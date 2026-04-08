@@ -4,5 +4,8 @@ Django==6.0.3
 django-ckeditor==6.7.3
 django-crispy-forms==2.6
 django-js-asset==3.1.2
+gunicorn==25.3.0
+packaging==26.0
 sqlparse==0.5.5
 tzdata==2026.1
+whitenoise==6.12.0
